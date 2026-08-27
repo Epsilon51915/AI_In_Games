@@ -1,0 +1,2 @@
+FIrst add submodule to josh's raylib wrapper
+8-puzzle: Draw board, use wasd to change selection, shift + wasd to move piece, use BFS to solve (?)
