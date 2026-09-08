@@ -1,0 +1,358 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.18"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "raylib",
+					"childIndexes" : 
+					[
+						2,
+						3,
+						7,
+						8
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-raylib-Debug-ffbf2ffbaebf28cc8977.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp"
+				},
+				{
+					"build" : "raylib/include",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-raylib.include-Debug-b8f2668e784d59b6c2eb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/include"
+				},
+				{
+					"build" : "raylib/raylib",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-raylib.raylib-Debug-591d688a27f2c3cc15b1.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "raylib/raylib/raylib",
+					"childIndexes" : 
+					[
+						5
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-raylib.raylib.raylib-Debug-a763b32f75eb062c91c5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 2,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib/src",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "raylib/raylib/raylib/external/glfw",
+					"childIndexes" : 
+					[
+						6
+					],
+					"jsonFile" : "directory-raylib.raylib.raylib.external.glfw-Debug-41a309dd8e16bbb244f7.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib/src/external/glfw"
+				},
+				{
+					"build" : "raylib/raylib/raylib/external/glfw/src",
+					"jsonFile" : "directory-raylib.raylib.raylib.external.glfw.src-Debug-5a628dfe1aae7772639a.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4"
+					},
+					"parentIndex" : 5,
+					"projectIndex" : 3,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib/src/external/glfw/src",
+					"targetIndexes" : 
+					[
+						1,
+						6
+					]
+				},
+				{
+					"build" : "raylib/raygui/projects/CMake",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-raylib.raygui.projects.CMake-Debug-e5e3ce601b8b04e3c877.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.11"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 4,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raygui/projects/CMake"
+				},
+				{
+					"build" : "raylib/BufferedRaylib",
+					"childIndexes" : 
+					[
+						9
+					],
+					"jsonFile" : "directory-raylib.BufferedRaylib-Debug-a4eb4f532dc04eb5f199.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 5,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "raylib/BufferedRaylib/FastSignals",
+					"childIndexes" : 
+					[
+						10
+					],
+					"jsonFile" : "directory-raylib.BufferedRaylib.FastSignals-Debug-7d14fe6cdfe62f77647b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 8,
+					"projectIndex" : 6,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/FastSignals"
+				},
+				{
+					"build" : "raylib/BufferedRaylib/FastSignals/libfastsignals",
+					"jsonFile" : "directory-raylib.BufferedRaylib.FastSignals.libfastsignals-Debug-1a6b48d85b20d87b8f2f.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.8"
+					},
+					"parentIndex" : 9,
+					"projectIndex" : 6,
+					"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/FastSignals/libfastsignals",
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "test",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						4,
+						5
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						2
+					],
+					"name" : "raylib_cpp",
+					"parentIndex" : 0
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						3,
+						4
+					],
+					"name" : "raylib",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						3,
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						5,
+						6
+					],
+					"name" : "GLFW",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						1,
+						6
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						7
+					],
+					"name" : "raygui",
+					"parentIndex" : 1
+				},
+				{
+					"childIndexes" : 
+					[
+						6
+					],
+					"directoryIndexes" : 
+					[
+						8
+					],
+					"name" : "BufferedRaylib",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						9,
+						10
+					],
+					"name" : "FastSignals",
+					"parentIndex" : 5,
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 8,
+					"id" : "buffered-raylib::@9d449cec8df032a48cb2",
+					"jsonFile" : "target-buffered-raylib-Debug-3bee14c82310c09c1351.json",
+					"name" : "buffered-raylib",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "glfw::@81d7d553296b460197cb",
+					"jsonFile" : "target-glfw-Debug-2a3fe5cf0495d02a362a.json",
+					"name" : "glfw",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "libfastsignals::@e916930eab1e15107164",
+					"jsonFile" : "target-libfastsignals-Debug-832504dd825c849d6f9b.json",
+					"name" : "libfastsignals",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "raylib::@d67f788492dcb32afbac",
+					"jsonFile" : "target-raylib-Debug-63821663af79b786bd7e.json",
+					"name" : "raylib",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test-Debug-c1e6ea5362cddc540ccb.json",
+					"name" : "test",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "uninstall::@7d429ebd5d102775094d",
+					"jsonFile" : "target-uninstall-Debug-2975557cbd825e3ebee6.json",
+					"name" : "uninstall",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "update_mappings::@81d7d553296b460197cb",
+					"jsonFile" : "target-update_mappings-Debug-1ae21a6e612906a16257.json",
+					"name" : "update_mappings",
+					"projectIndex" : 3
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/tyler/Coding/AI_In_Games/Test/build",
+		"source" : "/home/tyler/Coding/AI_In_Games/Test"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

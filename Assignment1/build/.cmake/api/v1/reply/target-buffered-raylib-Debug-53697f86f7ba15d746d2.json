@@ -1,0 +1,156 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "raylib/BufferedRaylib/libbuffered-raylib.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 39,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 41,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "GRAPHICS_API_OPENGL_33"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "PLATFORM_DESKTOP"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/src"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib/src"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raylib/src/external/glfw/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/tyler/Coding/AI_In_Games/Assignment1"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					2
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "raylib::@d67f788492dcb32afbac"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "glfw::@81d7d553296b460197cb"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "libfastsignals::@e916930eab1e15107164"
+		}
+	],
+	"id" : "buffered-raylib::@9d449cec8df032a48cb2",
+	"name" : "buffered-raylib",
+	"nameOnDisk" : "libbuffered-raylib.a",
+	"paths" : 
+	{
+		"build" : "raylib/BufferedRaylib",
+		"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"path" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/src/BufferedRaylib.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/src/BufferedRaylib.cpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

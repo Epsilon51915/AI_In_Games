@@ -1,0 +1,43 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"/home/tyler/Coding/AI_In_Games/raylib-cpp/raygui/projects/CMake/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 23,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/raygui/projects/CMake/../../src/raygui.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "raylib/raygui/projects/CMake",
+		"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/raygui/projects/CMake"
+	}
+}

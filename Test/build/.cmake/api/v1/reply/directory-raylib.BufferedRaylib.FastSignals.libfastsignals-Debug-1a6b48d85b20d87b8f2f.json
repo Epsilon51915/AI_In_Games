@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "raylib/BufferedRaylib/FastSignals/libfastsignals",
+		"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/BufferedRaylib/FastSignals/libfastsignals"
+	}
+}

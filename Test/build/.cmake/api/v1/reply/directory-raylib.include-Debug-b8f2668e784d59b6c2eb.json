@@ -1,0 +1,86 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 54,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/AudioDevice.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/AudioStream.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/AutomationEventList.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/BoundingBox.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Camera2D.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Camera3D.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Color.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/FileData.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/FileText.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Font.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Functions.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Gamepad.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Image.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Keyboard.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Material.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Matrix.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Mesh.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/MeshUnmanaged.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Model.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/ModelAnimation.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Mouse.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Music.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Ray.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/RayCollision.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/RaylibException.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/raylib-cpp-utils.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/raylib-cpp.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/raylib.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/raymath.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Rectangle.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/RenderTexture.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/ShaderUnmanaged.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Shader.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Sound.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Text.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Texture.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/TextureUnmanaged.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Touch.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Vector2.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Vector3.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Vector4.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/VrStereoConfig.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Wave.hpp",
+				"/home/tyler/Coding/AI_In_Games/raylib-cpp/include/Window.hpp"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "raylib/include",
+		"source" : "/home/tyler/Coding/AI_In_Games/raylib-cpp/include"
+	}
+}
