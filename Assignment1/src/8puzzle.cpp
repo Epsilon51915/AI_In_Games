@@ -111,7 +111,7 @@ class Node
     }
 };
 std::stack<Node*> stack;
-void DrawBoard(int board[])
+void DrawBoard(int board[], bool solved)
 {
     for(int i = 0; i < 3; i ++)
     {
@@ -121,7 +121,16 @@ void DrawBoard(int board[])
             {
                 continue;
             }
-            DrawText(std::to_string(board[3*i + j]).c_str(), 300 + 50 * j, 150 + 50 * i, 50, RED);
+            if(solved)
+            {
+            DrawText(std::to_string(board[3*i + j]).c_str(), 300 + 50 * j, 150 + 50 * i, 50, GREEN);
+
+            }
+            else
+            {
+                DrawText(std::to_string(board[3*i + j]).c_str(), 300 + 50 * j, 150 + 50 * i, 50, RED);
+            }
+            
         }
     }
 }
@@ -352,6 +361,7 @@ int main()
         4, 5, 6,
         7, 8, 0
     };
+    std::string solvedS ="123456780";
 
     int selected = 8;
     selected = RandomizeBoard(board, selected);
@@ -368,7 +378,16 @@ int main()
         window.BeginDrawing();
 
         DrawText("8-Puzzle", 325, 50, 40, BLUE);
-        DrawBoard(board);
+        DrawText("Press 'h' for help", 325, 400, 30, BLUE);
+        DrawText("Press 'r' for a new board", 325, 450, 30, BLUE);
+        std::string boardS;
+        
+        for(int i = 0; i < 9; i++)
+        {
+            boardS.append(std::to_string(board[i]));
+        }
+        if(boardS == solvedS) DrawBoard(board, true);
+        else DrawBoard(board, false);
         window.EndDrawing();
 
         if(raylib::Keyboard::IsKeyPressed(KEY_W) || raylib::Keyboard::IsKeyPressed(KEY_UP))
