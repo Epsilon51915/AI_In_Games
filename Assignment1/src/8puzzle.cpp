@@ -110,6 +110,8 @@ class Node
         }
     }
 };
+
+
 std::stack<Node*> stack;
 void DrawBoard(int board[], bool solved)
 {
@@ -134,6 +136,8 @@ void DrawBoard(int board[], bool solved)
         }
     }
 }
+
+
 
 // Selected is the index of the empty tile on the board
 // Swap is the index of the tile that is to be swapped with the selected blank tile
@@ -160,6 +164,8 @@ int MoveTile(int board[], Move move, int selected)
     //std::cout << "Swap succeeded, tried to swap " << move << " at index " << selected << std::endl;
     return Swap(board, selected, moves[selected][move]);
 }
+
+
 
 void BuildPastMovesArr(Move pastMoves[], Move move)
 {
@@ -227,15 +233,15 @@ int AnalysePastMoves(Move pastMoves[])
     }
 }
 
-int RandomizeBoard(int board[], int selected)
+int RandomizeBoard(int board[], int selected, int num)
 {
     Move pastMoves[4] = {NONE, NONE, NONE, NONE};
     int index = 0;
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < num; i++)
     {
         int move = AnalysePastMoves(pastMoves);
         int test = MoveTile(board, static_cast<Move>(move), selected);
-        //ensure 5 unique moves are made
+        //ensure NUM unique moves are made
         if(test == selected)
         {
             i--;
@@ -249,22 +255,26 @@ int RandomizeBoard(int board[], int selected)
     return selected;
 }
 
-int resetBoard(int board[])
+int resetBoard(int board[], int num_shuffle)
 {
     for(int i = 0; i < 8; i++)
     {
         board[i] = i+1;
     }
     board[8] = 0;
-    return RandomizeBoard(board, 8);
+    return RandomizeBoard(board, 8, num_shuffle);
     
 }
 
 
-void Solve(int board[], int selected)
+
+std::string Solve(int board[], int selected)
 {
     std::cout << std::endl << std::endl << "BEGIN SOLVE" << std::endl << std::endl << std::endl;
     Node * curNode = new Node;
+    std::string moveName;
+    std::string hint;
+    int test;
 
     curNode->selected = selected;
 
@@ -314,14 +324,15 @@ void Solve(int board[], int selected)
             stack.push(curNode);
             curNode = curNode->prevNode;
         }
-
+        test = stack.size() -1;
         for(int i = stack.size() -1; i >= 0; i--)
         {
+            
             Node* node = stack.top();
             stack.pop();
             std::cout << "Start at board " << curBoard << std::endl;
 
-            std::string moveName;
+            
             switch(node->prevMove)
             {
                 case 0:
@@ -340,9 +351,14 @@ void Solve(int board[], int selected)
                     moveName = "RIGHT";
                     break;
             }
+            if(i == test)
+            {
+                hint = moveName;
+            }
             std::cout << "Move " << moveName << " to get to board " << node->board << std::endl;
+            
         }
-        return;
+        return hint;
     }
     
 }
@@ -364,7 +380,7 @@ int main()
     std::string solvedS ="123456780";
 
     int selected = 8;
-    selected = RandomizeBoard(board, selected);
+    selected = RandomizeBoard(board, selected, 10);
     // Node testNode;
     // for(int i = 0; i < 9; i++)
     // {
@@ -372,6 +388,9 @@ int main()
     // }
     // testNode.selected = selected;
     // testNode.findNexts();
+
+    bool moved = false;
+    std::string hint;
     while(!window.ShouldClose())
     {
         window.ClearBackground();
@@ -379,7 +398,7 @@ int main()
 
         DrawText("8-Puzzle", 325, 50, 40, BLUE);
         DrawText("Press 'h' for help", 325, 400, 30, BLUE);
-        DrawText("Press 'r' for a new board", 325, 450, 30, BLUE);
+        DrawText("Press 'r' + '1'/'2'/'3' for a new board", 325, 450, 30, BLUE);
         std::string boardS;
         
         for(int i = 0; i < 9; i++)
@@ -393,27 +412,59 @@ int main()
         if(raylib::Keyboard::IsKeyPressed(KEY_W) || raylib::Keyboard::IsKeyPressed(KEY_UP))
         {
             selected = MoveTile(board, UP, selected);
-            
+            if(!moved)
+            {
+                moved = true;
+            }
         }
         if(raylib::Keyboard::IsKeyPressed(KEY_A) || raylib::Keyboard::IsKeyPressed(KEY_LEFT))
         {
             selected = MoveTile(board, LEFT, selected);
+            if(!moved)
+            {
+                moved = true;
+            }
         }
         if(raylib::Keyboard::IsKeyPressed(KEY_S) || raylib::Keyboard::IsKeyPressed(KEY_DOWN))
         {
             selected = MoveTile(board, DOWN, selected);
+            if(!moved)
+            {
+                moved = true;
+            }
         }
         if(raylib::Keyboard::IsKeyPressed(KEY_D) || raylib::Keyboard::IsKeyPressed(KEY_RIGHT))
         {
             selected = MoveTile(board, RIGHT, selected);
+            if(!moved)
+            {
+                moved = true;
+            }
         }
         if(raylib::Keyboard::IsKeyPressed(KEY_R))
         {
-            selected = resetBoard(board);
+            
+            if(raylib::Keyboard::IsKeyDown(KEY_ONE))
+            {
+                selected = resetBoard(board, 5);
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_TWO))
+            {
+                selected = resetBoard(board, 10);
+            }
+            else if(raylib::Keyboard::IsKeyDown(KEY_THREE))
+            {
+                selected = resetBoard(board, 15);
+            }
         }
         if(raylib::Keyboard::IsKeyPressed(KEY_H))
         {
-            Solve(board, selected);
+            hint = Solve(board, selected);
+            moved = false;
+        }
+        if(!moved)
+        {
+            DrawText(hint.c_str(), 150, 400, 30, GREEN);
         }
     }
 
