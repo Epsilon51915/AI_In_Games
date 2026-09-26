@@ -56,6 +56,7 @@ struct Pacman
     char draw_char;
     PacState state = REGULAR;
     int ghosts_eaten = 0;
+    int lives = 3;
 };
 
 struct Enemy
@@ -536,6 +537,11 @@ void drawPac(Pacman &pac, int frame_counter)
     }
     std::string draw(1, pac.draw_char);
     DrawText(draw.c_str(), 50 + pac.x_pos * 26, 50 + pac.y_pos * 26, 26, YELLOW);
+
+    for(int i = 0; i < pac.lives; i++)
+    {
+        DrawText("c", 50 + (i+1) * 26, 26, 26, YELLOW);
+    }
 }
 
 void drawGhost(Enemy &ghost, int powerup_counter)
@@ -582,6 +588,68 @@ void drawGhost(Enemy &ghost, int powerup_counter)
     raylib::DrawText(draw.c_str(), 50 + ghost.x_pos * 26, 50 + ghost.y_pos * 26, 26, color);
 }
 
+void drawPacDie(Pacman pac, int fc)
+{
+    if(fc < 45)
+    {
+        pac.draw_char = 'o';
+    }
+    else if(fc < 90)
+    {
+        pac.draw_char = 'u';
+    }
+    else if (fc < 135)
+    {
+        pac.draw_char = '_';
+    }
+    else
+    {
+        pac.draw_char = ' ';
+    }
+    std::string draw(1, pac.draw_char);
+    DrawText(draw.c_str(), 50 + pac.x_pos * 26, 50 + pac.y_pos * 26, 26, YELLOW);
+
+    for(int i = 0; i < pac.lives; i++)
+    {
+        DrawText("c", 50 + (i+1) * 26, 26, 26, YELLOW);
+    }
+}
+
+void resetAfterDeath(Enemy &blinky, Enemy &pinky, Enemy &inky, Enemy &clyde, Pacman &pac)
+{
+    blinky.x_pos = 13;
+    blinky.y_pos = 17;
+    blinky.state = CHASE;
+    blinky.draw_char = 'o';
+    blinky.dead = true;
+    blinky.dead_counter = 3 + (rand() % 3) - 1;
+
+    inky.x_pos = 14;
+    inky.y_pos = 17;
+    inky.state = CHASE;
+    inky.draw_char = 'o';
+    inky.dead = true;
+    inky.dead_counter = 9 + 2 * (rand() % 3) - 2;
+
+    pinky.x_pos = 15;
+    pinky.y_pos = 17;
+    pinky.state = CHASE;
+    pinky.draw_char = 'o';
+    pinky.dead = true;
+    pinky.dead_counter = 15 + 3 * (rand() % 3) - 3;
+
+    clyde.x_pos = 16;
+    clyde.y_pos = 17;
+    clyde.state = CHASE;
+    clyde.draw_char = 'o';
+    clyde.dead = true;
+    clyde.dead_counter = 21 + 4 * (rand() % 3) - 4;
+
+    pac.x_pos = 14;
+    pac.y_pos = 26;
+    pac.draw_char = 'o';
+}
+
 
 int main()
 {
@@ -601,6 +669,8 @@ int main()
     pac.y_pos = 26;
     pac.draw_char = 'o';
     int frame_counter = 0;
+    pac.lives = 3;
+    bool pac_died = false;
 
     Enemy blinky;
     blinky.x_pos = 13;
@@ -664,150 +734,181 @@ int main()
         }
         else if(scene == 1)
         {
-            frame_counter++;
-            DrawBoard(board, pac, score);
-            drawPac(pac, frame_counter);
-            drawGhost(inky, powerup_counter);
-            drawGhost(blinky, powerup_counter);
-            drawGhost(pinky, powerup_counter);
-            drawGhost(clyde, powerup_counter);
-            if(frame_counter == 60)
+            if(pac_died)
             {
-                frame_counter = 0;
-                seconds++;
-            }
-            if(frame_counter % 10 == 0)
-            {
-                if(frame_counter % 20 == 0)
+                frame_counter++;
+                drawPacDie(pac, frame_counter);
+                DrawBoard(board, pac, score);
+                
+                if(frame_counter == 180)
                 {
-                    getInput(pac);
-                    if(pac.state == POWERUP)
-                    {   
-                        if(last_state == REGULAR)
-                        {
-                            powerup_counter = 16;
-                            inky.state = FRIGHTENED;
-                            pinky.state = FRIGHTENED;
-                            blinky.state = FRIGHTENED;
-                            clyde.state = FRIGHTENED;
-                        }
-                        if(!skip)
-                        {
-                            runGhostAI(blinky, inky, pinky, clyde, pac, board);
-                            skip = true;
-                        }
-                        else
-                        {
-                            skip = false;
-                        }
-                        int pac_x = pac.x_pos;
-                        int pac_y = pac.y_pos;
-
-                        if(pac_x == blinky.x_pos && pac_y == blinky.y_pos && blinky.state != EATEN)
-                        {
-                            blinky.state = EATEN;
-                            pac.ghosts_eaten++;
-                            score += (pow(2, pac.ghosts_eaten) * 200);
-                        }
-                        if(pac_x == inky.x_pos && pac_y == inky.y_pos && inky.state != EATEN)
-                        {
-                            inky.state = EATEN;
-                            pac.ghosts_eaten++;
-                            score += (pow(2, pac.ghosts_eaten) * 200);
-                        }
-                        if(pac_x == pinky.x_pos && pac_y == pinky.y_pos && pinky.state != EATEN)
-                        {
-                            pinky.state = EATEN;
-                            pac.ghosts_eaten++;
-                            score += (pow(2, pac.ghosts_eaten) * 200);
-                        }
-                        if(pac_x == clyde.x_pos && pac_y == clyde.y_pos && clyde.state != EATEN)
-                        {
-                            clyde.state = EATEN;
-                            pac.ghosts_eaten++;
-                            score += (pow(2, pac.ghosts_eaten) * 200);
-                        }
-                        powerup_counter--;
-                        if(powerup_counter == 0)
-                        {
-                            pac.state = REGULAR;
-                            if(inky.state != EATEN)
-                            {
-                                inky.state = CHASE;
-                            }
-                            if(pinky.state != EATEN)
-                            {
-                                pinky.state = CHASE;
-                            }
-                            if(blinky.state != EATEN)
-                            {
-                                blinky.state = CHASE;
-                            }
-                            if(clyde.state != EATEN)
-                            {
-                                clyde.state = CHASE;
-                            }
-                            pac.ghosts_eaten = 0;
-                        }
+                    pac.lives--;
+                    if(pac.lives == 0)
+                    {
+                        scene = -1;
                     }
                     else
                     {
-                        skip = false;
-                        if(seconds_counter != -1)
-                        {
-                            if(seconds == seconds_counter)
-                            {
-                                if(seconds_counter == 7 && inky.state == SCATTER)
-                                {
-                                    seconds_counter = 5;
-                                }
-                                else if(seconds_counter == 5 && inky.state == SCATTER)
-                                {
-                                    seconds_counter = -1;
-                                }
-                                seconds = 0;
-                                if(inky.state == CHASE)
-                                {
-                                    inky.state = SCATTER;
-                                    pinky.state = SCATTER;
-                                    blinky.state = SCATTER;
-                                    clyde.state = SCATTER;
-                                }
-                                else
-                                {
-                                    inky.state = CHASE;
-                                    pinky.state = CHASE;
-                                    blinky.state = CHASE;
-                                    clyde.state = CHASE;
-                                }
-                            }
-                        }
-                        runGhostAI(blinky, inky, pinky, clyde, pac, board);
-                    }
-                    last_state = pac.state;
-                }
-                else
-                {
-                    if(blinky.state == EATEN)
-                    {
-                        generalGhostAI(blinky, pac, board);
-                    }
-                    if(pinky.state == EATEN)
-                    {
-                        generalGhostAI(pinky, pac, board);
-                    }
-                    if(inky.state == EATEN)
-                    {
-                        generalGhostAI(inky, pac, board);
-                    }
-                    if(clyde.state == EATEN)
-                    {
-                        generalGhostAI(clyde, pac, board);
+                        resetAfterDeath(blinky, pinky, inky, clyde, pac);
+                        seconds = 0;
+                        seconds_counter = 7;
+                        frame_counter = 0;
+                        pac_died = false;
                     }
                 }
             }
-            scorestr = "Score: " + std::to_string(score);
-            DrawText(scorestr.c_str(), 205, 20, 15, WHITE);
+            else
+            {
+                frame_counter++;
+                DrawBoard(board, pac, score);
+                drawPac(pac, frame_counter);
+                drawGhost(inky, powerup_counter);
+                drawGhost(blinky, powerup_counter);
+                drawGhost(pinky, powerup_counter);
+                drawGhost(clyde, powerup_counter);
+                if(frame_counter == 60)
+                {
+                    frame_counter = 0;
+                    seconds++;
+                }
+                if(frame_counter % 10 == 0)
+                {
+                    if(frame_counter % 20 == 0)
+                    {
+                        getInput(pac);
+                        if(pac.state == POWERUP)
+                        {   
+                            if(last_state == REGULAR)
+                            {
+                                powerup_counter = 16;
+                                inky.state = FRIGHTENED;
+                                pinky.state = FRIGHTENED;
+                                blinky.state = FRIGHTENED;
+                                clyde.state = FRIGHTENED;
+                            }
+                            if(!skip)
+                            {
+                                runGhostAI(blinky, inky, pinky, clyde, pac, board);
+                                skip = true;
+                            }
+                            else
+                            {
+                                skip = false;
+                            }
+                            int pac_x = pac.x_pos;
+                            int pac_y = pac.y_pos;
+
+                            if(pac_x == blinky.x_pos && pac_y == blinky.y_pos && blinky.state != EATEN)
+                            {
+                                blinky.state = EATEN;
+                                pac.ghosts_eaten++;
+                                score += (pow(2, pac.ghosts_eaten) * 200);
+                            }
+                            if(pac_x == inky.x_pos && pac_y == inky.y_pos && inky.state != EATEN)
+                            {
+                                inky.state = EATEN;
+                                pac.ghosts_eaten++;
+                                score += (pow(2, pac.ghosts_eaten) * 200);
+                            }
+                            if(pac_x == pinky.x_pos && pac_y == pinky.y_pos && pinky.state != EATEN)
+                            {
+                                pinky.state = EATEN;
+                                pac.ghosts_eaten++;
+                                score += (pow(2, pac.ghosts_eaten) * 200);
+                            }
+                            if(pac_x == clyde.x_pos && pac_y == clyde.y_pos && clyde.state != EATEN)
+                            {
+                                clyde.state = EATEN;
+                                pac.ghosts_eaten++;
+                                score += (pow(2, pac.ghosts_eaten) * 200);
+                            }
+                            powerup_counter--;
+                            if(powerup_counter == 0)
+                            {
+                                pac.state = REGULAR;
+                                if(inky.state != EATEN)
+                                {
+                                    inky.state = CHASE;
+                                }
+                                if(pinky.state != EATEN)
+                                {
+                                    pinky.state = CHASE;
+                                }
+                                if(blinky.state != EATEN)
+                                {
+                                    blinky.state = CHASE;
+                                }
+                                if(clyde.state != EATEN)
+                                {
+                                    clyde.state = CHASE;
+                                }
+                                pac.ghosts_eaten = 0;
+                            }
+                        }
+                        else
+                        {
+                            if((pac.x_pos == inky.x_pos && pac.y_pos == inky.y_pos) || (pac.x_pos == blinky.x_pos && pac.y_pos == blinky.y_pos) || (pac.x_pos == pinky.x_pos && pac.y_pos == pinky.y_pos) || (pac.x_pos == clyde.x_pos && pac.y_pos == clyde.y_pos))
+                            {
+                                pac_died = true;
+                                frame_counter = 0;
+                            }
+                            skip = false;
+                            if(seconds_counter != -1)
+                            {
+                                if(seconds == seconds_counter)
+                                {
+                                    if(seconds_counter == 7 && inky.state == SCATTER)
+                                    {
+                                        seconds_counter = 5;
+                                    }
+                                    else if(seconds_counter == 5 && inky.state == SCATTER)
+                                    {
+                                        seconds_counter = -1;
+                                    }
+                                    seconds = 0;
+                                    if(inky.state == CHASE)
+                                    {
+                                        inky.state = SCATTER;
+                                        pinky.state = SCATTER;
+                                        blinky.state = SCATTER;
+                                        clyde.state = SCATTER;
+                                    }
+                                    else
+                                    {
+                                        inky.state = CHASE;
+                                        pinky.state = CHASE;
+                                        blinky.state = CHASE;
+                                        clyde.state = CHASE;
+                                    }
+                                }
+                            }
+                            runGhostAI(blinky, inky, pinky, clyde, pac, board);
+                        }
+                        last_state = pac.state;
+                    }
+                    else
+                    {
+                        if(blinky.state == EATEN)
+                        {
+                            generalGhostAI(blinky, pac, board);
+                        }
+                        if(pinky.state == EATEN)
+                        {
+                            generalGhostAI(pinky, pac, board);
+                        }
+                        if(inky.state == EATEN)
+                        {
+                            generalGhostAI(inky, pac, board);
+                        }
+                        if(clyde.state == EATEN)
+                        {
+                            generalGhostAI(clyde, pac, board);
+                        }
+                    }
+                }
+                scorestr = "Score: " + std::to_string(score);
+                DrawText(scorestr.c_str(), 205, 20, 15, WHITE);
+            }
         }
         else if(scene == 2)
         {
