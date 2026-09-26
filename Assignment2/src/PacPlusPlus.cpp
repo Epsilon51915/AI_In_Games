@@ -488,6 +488,10 @@ int main()
     inky.state = CHASE;
     inky.draw_char = 'o';
 
+    bool skip = false;
+    PacState last_state = REGULAR;
+    int powerup_counter = 0;
+
     if(!loadBoard(board))
     {
         return -1;
@@ -518,7 +522,34 @@ int main()
             if(frame_counter % 20 == 0)
             {
                 getInput(pac);
-                generalGhostAI(inky, pac, board);
+                if(pac.state == POWERUP)
+                {
+                    if(last_state == REGULAR)
+                    {
+                        powerup_counter = 16;
+                        //last_state = POWERUP;
+                    }
+                    if(!skip)
+                    {
+                        generalGhostAI(inky, pac, board);
+                        skip = true;
+                    }
+                    else
+                    {
+                        skip = false;
+                    }
+                    powerup_counter--;
+                    if(powerup_counter == 0)
+                    {
+                        pac.state = REGULAR;
+                    }
+                }
+                else
+                {
+                    skip = false;
+                    generalGhostAI(inky, pac, board);
+                }
+                last_state = pac.state;
             }
             //getInput(pac);
             scorestr = "Score: " + std::to_string(score);
@@ -532,7 +563,5 @@ int main()
         window.EndDrawing();
         
     }
-    //█ ■
-
     return 0;
 }
