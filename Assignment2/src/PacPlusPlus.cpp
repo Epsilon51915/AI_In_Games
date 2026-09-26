@@ -57,6 +57,9 @@ struct Pacman
     PacState state = REGULAR;
     int ghosts_eaten = 0;
     int lives = 3;
+    int pellets_eaten;
+    int total_ghosts_eaten;
+    int power_pellets_eaten;
 };
 
 struct Enemy
@@ -463,6 +466,7 @@ void DrawBoard(char board[36][28], Pacman &pac, int &score)
                 {
                     board[row][col] = ' ';
                     score += 10;
+                    pac.pellets_eaten++;
                 }
                 DrawText(charstring.c_str(), 50 + col * 26, 50 + row * 26, 26, WHITE);
             }
@@ -473,6 +477,7 @@ void DrawBoard(char board[36][28], Pacman &pac, int &score)
                     board[row][col] = ' ';
                     score += 50;
                     pac.state = POWERUP;
+                    pac.power_pellets_eaten++;
                 }
                 DrawText(charstring.c_str(), 50 + col * 26, 50 + row * 26, 26, YELLOW);
             }
@@ -669,8 +674,11 @@ int main()
     pac.y_pos = 26;
     pac.draw_char = 'o';
     int frame_counter = 0;
-    pac.lives = 3;
+    pac.lives = 1;
     bool pac_died = false;
+    pac.pellets_eaten = 0;
+    pac.power_pellets_eaten = 0;
+    pac.total_ghosts_eaten = 0;
 
     Enemy blinky;
     blinky.x_pos = 13;
@@ -802,24 +810,28 @@ int main()
                             {
                                 blinky.state = EATEN;
                                 pac.ghosts_eaten++;
+                                pac.total_ghosts_eaten++;
                                 score += (pow(2, pac.ghosts_eaten) * 200);
                             }
                             if(pac_x == inky.x_pos && pac_y == inky.y_pos && inky.state != EATEN)
                             {
                                 inky.state = EATEN;
                                 pac.ghosts_eaten++;
+                                pac.total_ghosts_eaten++;
                                 score += (pow(2, pac.ghosts_eaten) * 200);
                             }
                             if(pac_x == pinky.x_pos && pac_y == pinky.y_pos && pinky.state != EATEN)
                             {
                                 pinky.state = EATEN;
                                 pac.ghosts_eaten++;
+                                pac.total_ghosts_eaten++;
                                 score += (pow(2, pac.ghosts_eaten) * 200);
                             }
                             if(pac_x == clyde.x_pos && pac_y == clyde.y_pos && clyde.state != EATEN)
                             {
                                 clyde.state = EATEN;
                                 pac.ghosts_eaten++;
+                                pac.total_ghosts_eaten++;
                                 score += (pow(2, pac.ghosts_eaten) * 200);
                             }
                             powerup_counter--;
@@ -913,6 +925,30 @@ int main()
         else if(scene == 2)
         {
 
+        }
+        else if(scene == -1)
+        {
+            DrawText("Game Over", 100, 400, 50, RED);
+            scorestr = "Final Score: " + std::to_string(score);
+            DrawText(scorestr.c_str(), 100, 450, 30, WHITE);
+            scorestr = "Pellets Eaten: " + std::to_string(pac.pellets_eaten);
+            DrawText(scorestr.c_str(), 100, 480, 30, WHITE);
+            scorestr = "Power Pellets Eaten: " + std::to_string(pac.power_pellets_eaten);
+            DrawText(scorestr.c_str(), 100, 510, 30, WHITE);
+            scorestr = "Ghosts Eaten: " + std::to_string(pac.total_ghosts_eaten);
+            DrawText(scorestr.c_str(), 100, 540, 30, WHITE);
+
+            DrawText("Press ENTER to restart", 100, 640, 50, RED);
+            DrawText("Press ESC to quit", 100, 690, 50, RED);
+
+            if(raylib::Keyboard::IsKeyPressed(KEY_ESCAPE))
+            {
+                window.Close();
+            }
+            else if(raylib::Keyboard::IsKeyPressed(KEY_ENTER))
+            {
+                scene = 0;
+            }
         }
         window.EndDrawing();
     }
