@@ -11,5 +11,6 @@ target_link_libraries(PacPlusPlus PUBLIC raylib raylib_cpp raygui)
 set_property(TARGET PacPlusPlus PROPERTY CXX_STANDARD 20)
 
 configure_file(../Assets/pacmanTileMap.txt tilemaps/LevelOneTilemap.txt COPYONLY)
+configure_file(../Assets/pacmanTileMap2.txt tilemaps/LevelTwoTilemap.txt COPYONLY)
 #configure_file(../assets/audio/luckyPickup.mp3 audio/luckyPickup.mp3 COPYONLY)
 #configure_file(../assets/audio/walk.mp3 audio/walk.mp3 COPYONLY)
