@@ -1205,6 +1205,7 @@ int main()
     char board[36][28];
     char newboard[36][28];
     int score = 0;
+    int life_score = 0;
     int scene = 0;
     std::string scorestr;
 
@@ -1214,6 +1215,7 @@ int main()
     pac.draw_char = 'o';
     int frame_counter = 0;
     pac.lives = 3;
+    int ghost_stall = 0;
     bool pac_died = false;
     pac.pellets_eaten = 0;
     pac.power_pellets_eaten = 0;
@@ -1333,6 +1335,12 @@ int main()
                 {
                     if(frame_counter % TIME_BETWEEN_MOVES == 0)
                     {
+                        if(score > 10000)
+                        {
+                            pac.lives++;
+                            score -= 10000;
+                            life_score++;
+                        }
                         if(update(pac, board, blinky, pinky, inky, clyde, prev))
                         {
                             scene = 2;
@@ -1416,7 +1424,20 @@ int main()
                             else
                             {
                                 pac.state = REGULAR;
-                                runGhostAI(blinky, inky, pinky, clyde, pac, board);
+                                if((pac.x_pos == inky.x_pos && pac.y_pos == inky.y_pos) || (pac.x_pos == blinky.x_pos && pac.y_pos == blinky.y_pos) || (pac.x_pos == pinky.x_pos && pac.y_pos == pinky.y_pos) || (pac.x_pos == clyde.x_pos && pac.y_pos == clyde.y_pos))
+                                {
+                                    pac_died = true;
+                                    frame_counter = 0;
+                                }
+                                if(ghost_stall != 10)
+                                {
+                                    runGhostAI(blinky, inky, pinky, clyde, pac, board);
+                                    ghost_stall++;
+                                }   
+                                else
+                                {
+                                    ghost_stall = 0;
+                                }
                                 if((pac.x_pos == inky.x_pos && pac.y_pos == inky.y_pos) || (pac.x_pos == blinky.x_pos && pac.y_pos == blinky.y_pos) || (pac.x_pos == pinky.x_pos && pac.y_pos == pinky.y_pos) || (pac.x_pos == clyde.x_pos && pac.y_pos == clyde.y_pos))
                                 {
                                     pac_died = true;
@@ -1477,7 +1498,7 @@ int main()
                         }
                     }
                 }
-                scorestr = "Score: " + std::to_string(score);
+                scorestr = "Score: " + std::to_string(score + 10000 * life_score);
                 DrawText(scorestr.c_str(), 205, 20, 15, WHITE);
             }
         }
