@@ -124,8 +124,17 @@ void findAdj(Tile* cur_tile, char board[36][28], bool ghost_finding)//, std::uno
     {
         if(i % 2 == 0)
         {
+            
             x = cur_tile->x_pos + (i-1);
             y= cur_tile->y_pos;
+            if(x == 0 && y == 17 && i == 0)
+            {
+                x = 27;
+            }
+            else if(x == 28 && y == 17 && i == 2)
+            {
+                x = 1;
+            }
             board_tile = board[y][x];
         }
         else
@@ -192,6 +201,7 @@ int findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const 
     std::unordered_set<std::string> visited;
 
     std::string temp;
+    int tempctr = counter;
 
     Tile* cur_search_tile = cur_tile;
     queue.push(cur_search_tile);
@@ -238,6 +248,10 @@ int findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const 
     }
     //outputS.close();
     //std::cout << "Found" << std::endl;
+    if(cur_search_tile->x_pos == g4.x_pos && cur_search_tile->y_pos == g4.y_pos)
+    {
+        return tempctr;
+    }
 
     return cur_search_tile->value;
 }
@@ -440,11 +454,11 @@ int nextMove(Pacman &pac, char board[36][28], Enemy &blinky, Enemy &pinky, Enemy
 
             if(pac.state == POWERUP)
             {
-                ghost = (pow(2, pac.ghosts_eaten + 1) * 200) - 30 * (7 - ghost);
+                ghost = (pow(2, pac.ghosts_eaten + 1) * 200) - 50 * (7 - ghost);
             }
             else
             {
-                ghost = 30 * (7-ghost);
+                ghost = 40 * (7-ghost);
             }
 
             // 4. Find if a power pellet is within 4 tiles
@@ -467,7 +481,7 @@ int nextMove(Pacman &pac, char board[36][28], Enemy &blinky, Enemy &pinky, Enemy
             {
                 if(trapped(pac, test, board, blinky, pinky, inky, clyde))
                 {
-                    value = 0;
+                    value -= 200;
                     std::cout << "TRAP ON " << i << std::endl;
                 }
             }
@@ -496,15 +510,15 @@ int nextMove(Pacman &pac, char board[36][28], Enemy &blinky, Enemy &pinky, Enemy
             }
             // Doubling back
             std::cout << x << " vs " << prev.x_pos << " and " << y << " vs " << prev.y_pos << std::endl;
-            if(x == prev.x_pos && y == prev.y_pos)
+            if(x == prev.x_pos && y == prev.y_pos && pac.state != POWERUP)
             {
                 std::cout << "Doubled back." << std::endl;
-                values[i] = values[i] - 40.0;
+                values[i] -= 80.0;
             }
 
             if(pac.state != POWERUP && ((x == blinky.x_pos && y == blinky.y_pos) || (x == pinky.x_pos && y == pinky.y_pos) || (x == inky.x_pos && y == inky.y_pos) || (x == clyde.x_pos && y == clyde.y_pos)))
             {
-                values[i] = -1000.0;
+                values[i] -= 1000.0;
             }
 
             for(int j = 0; j < 4; j++)
@@ -523,7 +537,7 @@ int nextMove(Pacman &pac, char board[36][28], Enemy &blinky, Enemy &pinky, Enemy
                 {
                     if((x == blinky.x_pos && y == blinky.y_pos) || (x == pinky.x_pos && y == pinky.y_pos) || (x == inky.x_pos && y == inky.y_pos) || (x == clyde.x_pos && y == clyde.y_pos))
                     {
-                        values[i] = -1000.0;
+                        values[i] -= 1000.0;
                         break;
                     }
                 }
@@ -606,6 +620,14 @@ bool update(Pacman &pac, char board[36][28], Enemy blinky, Enemy pinky, Enemy in
     else
     {
         pac.y_pos += move - 2;
+    }
+    if(pac.x_pos == 1 && pac.y_pos == 17 && pac.dir == 0)
+    {
+        pac.x_pos = 27;
+    }
+    else if(pac.x_pos == 27 && pac.y_pos == 17 && pac.dir == 2)
+    {
+        pac.x_pos = 1;
     }
     return false;
 }
@@ -1206,6 +1228,7 @@ int main()
     char newboard[36][28];
     int score = 0;
     int life_score = 0;
+    int wins = 0;
     int scene = 0;
     std::string scorestr;
 
@@ -1510,6 +1533,7 @@ int main()
             if(frame_counter == 180)
             {
                 scene = 3;
+                wins++;
             }
         }
         else if(scene == 3)
@@ -1576,6 +1600,12 @@ int main()
                 {
                     if(frame_counter % TIME_BETWEEN_MOVES == 0)
                     {
+                        if(score > 10000)
+                        {
+                            pac.lives++;
+                            score -= 10000;
+                            life_score++;
+                        }
                         if(update(pac, newboard, blinky, pinky, inky, clyde, prev))
                         {
                             scene = 2;
@@ -1720,16 +1750,16 @@ int main()
                         }
                     }
                 }
-                scorestr = "Score: " + std::to_string(score);
+                scorestr = "Score: " + std::to_string(score + 10000 * life_score);
                 DrawText(scorestr.c_str(), 205, 20, 15, WHITE);
             }
         }   
         else if(scene == -1)
         {
             DrawText("Game Over", 100, 400, 50, RED);
-            scorestr = "Final Score: " + std::to_string(score);
+            scorestr = "Final Score: " + std::to_string(score + 10000 * life_score);
             DrawText(scorestr.c_str(), 100, 450, 30, WHITE);
-            scorestr = "Pellets Eaten: " + std::to_string(pac.pellets_eaten);
+            scorestr = "Pellets Eaten: " + std::to_string(pac.pellets_eaten + 242 * wins);
             DrawText(scorestr.c_str(), 100, 480, 30, WHITE);
             scorestr = "Power Pellets Eaten: " + std::to_string(pac.power_pellets_eaten);
             DrawText(scorestr.c_str(), 100, 510, 30, WHITE);
