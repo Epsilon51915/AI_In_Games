@@ -64,6 +64,7 @@ struct Pacman
     int pellets_eaten;
     int total_ghosts_eaten;
     int power_pellets_eaten;
+    int dir = 0;
 };
 
 struct Enemy
@@ -199,12 +200,12 @@ int findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const 
     int y = cur_search_tile->y_pos;
     temp = std::to_string(cur_search_tile->x_pos) + "," + std::to_string(cur_search_tile->y_pos);
     visited.insert(temp);
-    std::cout << "TEST1" << std::endl;
+    //std::cout << "TEST1" << std::endl;
     if(test)
     {
         if(cur_tile->prev_tile != nullptr)
         {
-            std::cout << "cur_tile->prev_tile is not nullptr" << std::endl;
+            //std::cout << "cur_tile->prev_tile is not nullptr" << std::endl;
             temp = std::to_string(cur_tile->prev_tile->x_pos) + "," + std::to_string(cur_tile->prev_tile->y_pos);
             visited.insert(temp);
         }
@@ -212,14 +213,15 @@ int findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const 
     
     //std::cout << "TEST" << std::endl;
     //int counter = 0;
-    while(!(x == g1.x_pos && y == g1.y_pos && g1.state != EATEN) && !(x == g2.x_pos && y == g2.y_pos && g2.state != EATEN) && !(x == g3.x_pos && y == g3.y_pos && g3.state != EATEN) && !(x == g4.x_pos && y == g4.y_pos && g4.state != EATEN) && counter > 0)
+    cur_search_tile->value = counter;
+    while(!(x == g1.x_pos && y == g1.y_pos && g1.state != EATEN) && !(x == g2.x_pos && y == g2.y_pos && g2.state != EATEN) && !(x == g3.x_pos && y == g3.y_pos && g3.state != EATEN) && !(x == g4.x_pos && y == g4.y_pos && g4.state != EATEN) && cur_search_tile->value > 0)
     {
         findAdj(cur_search_tile, board, true);
         for(int i = 0; i < 4; i++)
         {
             if(cur_search_tile->adj_tile[i] != nullptr)
             {
-                cur_search_tile->adj_tile[i]->value = cur_search_tile->value + 1;
+                cur_search_tile->adj_tile[i]->value = cur_search_tile->value - 1;
                 temp = std::to_string(cur_search_tile->adj_tile[i]->x_pos) + "," + std::to_string(cur_search_tile->adj_tile[i]->y_pos);
                 if(!visited.contains(temp))
                 {
@@ -232,12 +234,12 @@ int findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const 
         queue.pop();
         x = cur_search_tile->x_pos;
         y = cur_search_tile->y_pos;
-        counter--;
+        //counter--;
     }
     //outputS.close();
     //std::cout << "Found" << std::endl;
 
-    return counter;
+    return cur_search_tile->value;
 }
 
 int findPowerPellet(Tile* cur_tile, char board[36][28])
@@ -341,6 +343,13 @@ bool trapped(Pacman pac, Pacman test, char board[36][28], const Enemy &g1, const
                 tile = board[y][x];
                 if(tile == ' ' || tile == '.' || tile == 'o' || tile == 'X')
                 {
+                    if(tile == 'o')
+                    {
+                        in_tunnel = false;
+                        hold_x = x;
+                        hold_y = y;
+                        break;
+                    }
                     //std::cout << tile << possible_moves << std::endl;
                     possible_moves++;
                     hold_x = x;
@@ -378,7 +387,14 @@ bool trapped(Pacman pac, Pacman test, char board[36][28], const Enemy &g1, const
         if(findNearestGhost(cur_tile, board, g1, g2, g3, g4, counter, true) != 0)
         {
             //std::cout << test.x_pos << "," << test.y_pos << " is TRAPPED!!" << std::endl;
+            delete cur_tile;
+            delete prev;
             return true;
+        }
+        else
+        {
+            delete cur_tile;
+            delete prev;
         }
     }
     
@@ -452,6 +468,7 @@ int nextMove(Pacman &pac, char board[36][28], Enemy &blinky, Enemy &pinky, Enemy
                 if(trapped(pac, test, board, blinky, pinky, inky, clyde))
                 {
                     value = 0;
+                    std::cout << "TRAP ON " << i << std::endl;
                 }
             }
             
@@ -581,6 +598,7 @@ bool update(Pacman &pac, char board[36][28], Enemy blinky, Enemy pinky, Enemy in
     // Based on return value, move to next positions
     prev.x_pos = pac.x_pos;
     prev.y_pos = pac.y_pos;
+    pac.dir = move;
     if(move % 2 == 0)
     {
         pac.x_pos += move - 1;
@@ -829,27 +847,55 @@ void generalGhostAI(Enemy &ghost, Pacman pac, char board[36][28])
     // Chase pacman based on certain "personality" traits
     if(ghost.state == CHASE)
     {
-        //std::cout << "Start find move" << std::endl;
-        findMove(ghost, pac, cur_tile, board);
-        //std::cout << ghost.x_pos << " " << ghost.y_pos << std::endl;
-        //std::cout << "End find move" << std::endl;
-        // UNIMPLEMENTED
-        /*if(ghost.type == INKY)
+        if(ghost.type == INKY)
         {
-
+            findMove(ghost, pac, cur_tile, board);
         }
         else if(ghost.type == PINKY)
         {
+            Pacman newpac;
+            if(pac.dir % 2 == 0)
+            {
+                newpac.x_pos = pac.x_pos + 4*(pac.dir - 1);
+                newpac.y_pos = pac.y_pos;
+                while(board[newpac.y_pos][newpac.x_pos] != ' ' && board[newpac.y_pos][newpac.x_pos] != 'o'  && board[newpac.y_pos][newpac.x_pos] != '.'  && board[newpac.y_pos][newpac.x_pos] != 'X' )
+                {
+                    newpac.x_pos += -(pac.dir - 1);
+                }
+            }
+            else
+            {
+                newpac.x_pos = pac.x_pos;
+                newpac.y_pos = pac.y_pos + 4*(pac.dir - 2);
+                while(board[newpac.y_pos][newpac.x_pos] != ' ' && board[newpac.y_pos][newpac.x_pos] != 'o'  && board[newpac.y_pos][newpac.x_pos] != '.'  && board[newpac.y_pos][newpac.x_pos] != 'X' )
+                {
+                    newpac.y_pos += -(pac.dir - 2);
+                }
+            }
             // Target pacman's position plus 4 tiles in front of pacman
+            findMove(ghost, newpac, cur_tile, board);
         }
         else if(ghost.type == BLINKY)
         {
             // Target pacman's exact position
+            findMove(ghost, pac, cur_tile, board);
         }
         else
         {
             // Clyde, target pacman until within 8 tiles, then retreat to bottom right corner
-        }*/
+            Pacman newpac;
+            if(abs(pac.x_pos - ghost.x_pos) + abs(pac.y_pos - ghost.y_pos) <= 8)
+            {
+                newpac.x_pos = 26;
+                newpac.y_pos = 32;
+            }
+            else
+            {
+                newpac.x_pos = pac.x_pos;
+                newpac.y_pos = pac.y_pos;
+            }
+            findMove(ghost, newpac, cur_tile, board);
+        }
     }
     // Move to assigned corner
     else if(ghost.state == SCATTER)
