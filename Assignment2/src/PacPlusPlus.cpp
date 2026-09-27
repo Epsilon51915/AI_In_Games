@@ -23,6 +23,7 @@
 #include <list>
 #include <unordered_set>
 #include <cmath>
+#include <queue>
 
 #define CYAN ColorFromHSV(180, 1, 1);
 
@@ -85,20 +86,19 @@ struct Tile
     int value;
 
     // List of all 4 cardinally adjacent tiles (UP, RIGHT, DOWN, LEFT)
-    Tile *adj_tile[4];
+    //Tile *adj_tile[4];
+    std::unique_ptr<Tile*[]> adj_tile = std::make_unique<Tile*[]>(4);
 
     // Number of moves to reach this tile
     int num_moves;
 
     ~Tile()
     {
-        for(int i = 0; i < 4; i++)
-        {
-            if(adj_tile[i] != nullptr)
-            {
-                delete adj_tile[i];
-            }
-        }
+        // for(int i = 0; i < 4; i++)
+        // {
+        //     delete adj_tile[i];
+        //     adj_tile[i] = nullptr;
+        // }
     }
 };
 /*
@@ -118,6 +118,304 @@ struct Tile
 // Implement A*, returning a direction for the pacman to move.
 
 // Refactor once AI is functional to change position based on an input provided to function by pathing algorithms
+
+void findAdj(Tile* cur_tile, char board[36][28], bool ghost_finding)//, std::unordered_set<std::string> &visited)
+{
+    char board_tile;
+    int x, y;
+    for(int i = 0; i < 4; i++)
+    {
+        if(i % 2 == 0)
+        {
+            x = cur_tile->x_pos + (i-1);
+            y= cur_tile->y_pos;
+            board_tile = board[y][x];
+        }
+        else
+        {
+            y= cur_tile->y_pos + (i-2);
+            x = cur_tile->x_pos;
+            board_tile = board[y][x];
+        }
+
+        if(board_tile == 'X' || board_tile == '.' || board_tile == 'o' || board_tile == ' ' || (ghost_finding && board_tile == '-'))
+        {
+            Tile *new_tile = new Tile;
+            new_tile->x_pos = x;
+            new_tile->y_pos = y;
+            new_tile->value = 0;
+            cur_tile->adj_tile[i] = new_tile;
+        }
+        else
+        {
+            cur_tile->adj_tile[i] = nullptr;
+        }
+    }
+}
+
+void findNearestPellet(Tile* cur_tile, char board[36][28])
+{
+    // Perform BFS starting at cur_tile, ending when the first pellet is found.
+    std::queue<Tile*> queue;
+    std::unordered_set<std::string> visited;
+
+    std::string temp;
+
+    Tile* cur_search_tile = cur_tile;
+    queue.push(cur_search_tile);
+
+    while(board[cur_search_tile->y_pos][cur_search_tile->x_pos] != '.')
+    {
+        findAdj(cur_search_tile, board, false);
+        for(int i = 0; i < 4; i++)
+        {
+            if(cur_search_tile->adj_tile[i] != nullptr)
+            {
+                cur_search_tile->adj_tile[i]->value = cur_search_tile->value + 1;
+                temp = std::to_string(cur_search_tile->adj_tile[i]->x_pos) + "," + std::to_string(cur_search_tile->adj_tile[i]->y_pos);
+                if(!visited.contains(temp))
+                {
+                    visited.insert(temp);
+                    queue.push(cur_search_tile->adj_tile[i]);
+                }
+            }
+        }
+        cur_search_tile = queue.front();
+        queue.pop();
+    }
+
+    cur_tile->value = 20 / (cur_search_tile->value + 1);
+}
+
+void findNearestGhost(Tile* cur_tile, char board[36][28], const Enemy &g1, const Enemy &g2, const Enemy &g3, const Enemy &g4, bool is_pac_powered, int ghosts_eaten)
+{
+    // Perform BFS starting at cur_tile, ending when the first pellet is found.
+    std::queue<Tile*> queue;
+    std::unordered_set<std::string> visited;
+
+    std::string temp;
+
+    Tile* cur_search_tile = cur_tile;
+    queue.push(cur_search_tile);
+    std::ofstream outputS("adjOutput.txt");
+    int x = cur_search_tile->x_pos;
+    int y = cur_search_tile->y_pos;
+    while(!(x == g1.x_pos && y == g1.y_pos && g1.state != EATEN) && !(x == g2.x_pos && y == g2.y_pos && g2.state != EATEN) && !(x == g3.x_pos && y == g3.y_pos && g3.state != EATEN) && !(x == g4.x_pos && y == g4.y_pos && g4.state != EATEN))
+    {
+        findAdj(cur_search_tile, board, true);
+        //std::cout << "Find adj" << std::endl;
+        for(int i = 0; i < 4; i++)
+        {
+            if(cur_search_tile->adj_tile[i] != nullptr)
+            {
+                cur_search_tile->adj_tile[i]->value = cur_search_tile->value + 1;
+                temp = std::to_string(cur_search_tile->adj_tile[i]->x_pos) + "," + std::to_string(cur_search_tile->adj_tile[i]->y_pos);
+                if(!visited.contains(temp))
+                {
+                    visited.insert(temp);
+                    queue.push(cur_search_tile->adj_tile[i]);
+                }
+                
+                //std::cout << temp << std::endl;
+                outputS << temp << std::endl;
+            }
+        }
+        cur_search_tile = queue.front();
+        queue.pop();
+        x = cur_search_tile->x_pos;
+        y = cur_search_tile->y_pos;
+    }
+    outputS.close();
+    //std::cout << "Found" << std::endl;
+
+    if(is_pac_powered)
+    {
+        cur_tile->value += (pow(2, ghosts_eaten) * 200)/(2*cur_search_tile->value);
+    }
+    else
+    {
+        //std::cout << "Get value" << std::endl;
+        cur_tile->value += 150 * cur_search_tile->value;
+    }
+}
+
+void findPowerPellet(Tile* cur_tile, char board[36][28])
+{
+    // Perform BFS starting at cur_tile, ending when the first pellet is found.
+    std::queue<Tile*> queue;
+    std::unordered_set<std::string> visited;
+
+    std::string temp;
+    int counter = 4;
+    Tile* cur_search_tile = cur_tile;
+    queue.push(cur_search_tile);
+
+    while(board[cur_search_tile->y_pos][cur_search_tile->x_pos] != 'o' && counter > 0)
+    {
+        findAdj(cur_search_tile, board, false);
+        for(int i = 0; i < 4; i++)
+        {
+            if(cur_search_tile->adj_tile[i] != nullptr)
+            {
+                //cur_search_tile->adj_tile[i]->value = cur_search_tile->value + 1;
+                temp = std::to_string(cur_search_tile->adj_tile[i]->x_pos) + "," + std::to_string(cur_search_tile->adj_tile[i]->y_pos);
+                if(!visited.contains(temp))
+                {
+                    visited.insert(temp);
+                    queue.push(cur_search_tile->adj_tile[i]);
+                }
+            }
+        }
+        cur_search_tile = queue.front();
+        queue.pop();
+        counter--;
+    }
+
+    if(counter != 0)
+    {
+        cur_tile->value += 50;
+    }
+}
+
+// LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 (CW at 9)
+int nextMove(Pacman &pac, char board[36][28], Enemy blinky, Enemy pinky, Enemy inky, Enemy clyde, Pacman prev)
+{
+    /*
+        UTILITY FUNCTION:
+            Choose tile with HIGHEST VALUE, calculated as:
+                Score = 10/distance from nearest pellet + 50 * distance from nearest ghost + 50 if power pellet is within 4 moves
+                + (pow(2, number of ghosts eaten + 1) * 200)/distance from closest ghost if pacman has powerup 
+    */
+
+    // 1. Find all adjacent tiles
+    //std::cout << "Start nextMove" << std::endl;
+    Tile *cur_tile = new Tile;
+    cur_tile->x_pos = pac.x_pos;
+    cur_tile->y_pos = pac.y_pos;
+    cur_tile->value = 0;
+    findAdj(cur_tile, board, false);
+
+    //std::cout << "Found all adj" << std::endl;
+    // 2. Find nearest pellet to all tiles
+    for(int i = 0; i < 4; i++)
+    {
+        if(cur_tile->adj_tile[i] != nullptr)
+        {
+            findNearestPellet(cur_tile->adj_tile[i], board);
+        }
+    }
+    //std::cout << "Found nearest pellet" << std::endl;
+    // 3. Find nearest ghost to all tiles
+    if(pac.state != POWERUP)
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            if(cur_tile->adj_tile[i] != nullptr)
+            {
+                //std::cout << "Find nearest ghost i = " << i << std::endl;
+                findNearestGhost(cur_tile->adj_tile[i], board, blinky, pinky, inky, clyde, false, pac.ghosts_eaten);
+            }
+        }
+
+        std::cout << "Found nearest ghost without powerup" << std::endl;
+    }
+    
+
+    // 4. Find if power pellet is in 4 tiles
+    for(int i = 0; i < 4; i++)
+    {
+        if(cur_tile->adj_tile[i] != nullptr)
+        {
+            findPowerPellet(cur_tile->adj_tile[i], board);
+        }
+    }
+
+    //std::cout << "Found nearest power pellet" << std::endl;
+    // 5. If pacman is powered up, look for ghosts and apply a better buff
+    if(pac.state == POWERUP)
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            if(cur_tile->adj_tile[i] != nullptr)
+            {
+                findNearestGhost(cur_tile->adj_tile[i], board, blinky, pinky, inky, clyde, true, pac.ghosts_eaten);
+            }
+        }
+        std::cout << "Found nearest ghost with powerup" << std::endl;
+    }
+    
+
+    // 6. Compare values for adjacent tiles, return highest value
+    int highest = -1;
+    int hI = -1;
+    int x, y;
+    for(int i = 0; i < 4; i++)
+    {
+        if(cur_tile->adj_tile[i] != nullptr)
+        {
+            x = cur_tile->adj_tile[i]->x_pos;
+            y = cur_tile->adj_tile[i]->y_pos;
+            for(int j = 0; j < 4; j++)
+            {
+                if(j % 2 == 0)
+                {
+                    x += j - 1;
+                }
+                else
+                {
+                    y += j - 2;
+                }
+                if((x == blinky.x_pos && y == blinky.y_pos && blinky.state != FRIGHTENED) || (x == pinky.x_pos && y == pinky.y_pos && pinky.state != FRIGHTENED) || (x == inky.x_pos && y == inky.y_pos && inky.state != FRIGHTENED) || (x == clyde.x_pos && y == clyde.y_pos && clyde.state != FRIGHTENED))
+                {
+                    cur_tile->adj_tile[i]->value = 0;
+                    break;
+                }
+            }
+            
+            if(x == prev.x_pos && y == prev.y_pos)
+            {
+                cur_tile->adj_tile[i]->value -= 100;
+            }
+            if(cur_tile->adj_tile[i]->value > highest)
+            {
+                highest = cur_tile->adj_tile[i]->value;
+                hI = i;
+            }
+        }
+    }
+    //std::cout << "Found highest value" << std::endl;
+
+    delete cur_tile;
+    cur_tile = nullptr;
+    return hI;
+}
+
+bool update(Pacman &pac, char board[36][28], Enemy blinky, Enemy pinky, Enemy inky, Enemy clyde, Pacman &prev)
+{
+    // Check if pacman has eaten 242 pellets
+    if(pac.pellets_eaten == 242)
+    {
+        return true;
+    }
+
+    // Run algorithm to find highest utility adjacent move
+    int move = nextMove(pac, board, blinky, pinky, inky, clyde, prev);
+
+    // Based on return value, move to next positions
+    //std::cout << "Edit pac pos" << std::endl;
+    prev.x_pos = pac.x_pos;
+    prev.y_pos = pac.y_pos;
+    if(move % 2 == 0)
+    {
+        pac.x_pos += move - 1;
+    }
+    else
+    {
+        pac.y_pos += move - 2;
+    }
+    //std::cout << "Return" << std::endl;
+    return false;
+}
 
 void getInput(Pacman &pac)
 {
@@ -234,7 +532,7 @@ void findMove(Enemy &ghost, Pacman pac, Tile *cur_tile, char board[36][28])
     int start_x = ghost.x_pos;
     int start_y = ghost.y_pos;
 
-    std::cout << "START" << start_x << "," << start_y << std::endl;
+    //std::cout << "START" << start_x << "," << start_y << std::endl;
     Tile* cur_search_tile = cur_tile;
     std::list<Tile*> all_tiles;
     all_tiles.push_back(cur_search_tile);
@@ -290,8 +588,8 @@ void findMove(Enemy &ghost, Pacman pac, Tile *cur_tile, char board[36][28])
     
     while(cur_search_tile->prev_tile->x_pos != start_x || cur_search_tile->prev_tile->y_pos != start_y)
     {
-        std::cout << "PREV TILE FROM " << cur_search_tile->x_pos << "," << cur_search_tile->y_pos << ": " << 
-        cur_search_tile->prev_tile->x_pos << "," << cur_search_tile->prev_tile->y_pos << std::endl; 
+        //std::cout << "PREV TILE FROM " << cur_search_tile->x_pos << "," << cur_search_tile->y_pos << ": " << 
+        //cur_search_tile->prev_tile->x_pos << "," << cur_search_tile->prev_tile->y_pos << std::endl; 
 
         cur_search_tile = cur_search_tile->prev_tile;
     }
@@ -326,7 +624,7 @@ void findMove(Enemy &ghost, Pacman pac, Tile *cur_tile, char board[36][28])
     }
     else
     {
-        std::cout << cur_search_tile->x_pos << " " << cur_search_tile->y_pos << std::endl;
+        //std::cout << cur_search_tile->x_pos << " " << cur_search_tile->y_pos << std::endl;
         ghost.x_pos = cur_search_tile->x_pos;
         ghost.y_pos = cur_search_tile->y_pos;
     }
@@ -356,10 +654,10 @@ void generalGhostAI(Enemy &ghost, Pacman pac, char board[36][28])
     // Chase pacman based on certain "personality" traits
     if(ghost.state == CHASE)
     {
-        std::cout << "Start find move" << std::endl;
+        //std::cout << "Start find move" << std::endl;
         findMove(ghost, pac, cur_tile, board);
-        std::cout << ghost.x_pos << " " << ghost.y_pos << std::endl;
-        std::cout << "End find move" << std::endl;
+        //std::cout << ghost.x_pos << " " << ghost.y_pos << std::endl;
+        //std::cout << "End find move" << std::endl;
         // UNIMPLEMENTED
         /*if(ghost.type == INKY)
         {
@@ -431,11 +729,12 @@ void generalGhostAI(Enemy &ghost, Pacman pac, char board[36][28])
         {
             ghost.y_pos = 17;
             ghost.dead = true;
-            ghost.dead_counter = 6;
+            ghost.dead_counter = 6 + 4 * ghost.type;
             ghost.state = CHASE;
         }
     }
-    
+    delete cur_tile;
+    cur_tile = nullptr;
 }
 
 void runGhostAI(Enemy &blinky, Enemy &inky, Enemy &pinky, Enemy &clyde, Pacman pac, char board[36][28])
@@ -674,11 +973,12 @@ int main()
     pac.y_pos = 26;
     pac.draw_char = 'o';
     int frame_counter = 0;
-    pac.lives = 1;
+    pac.lives = 3;
     bool pac_died = false;
     pac.pellets_eaten = 0;
     pac.power_pellets_eaten = 0;
     pac.total_ghosts_eaten = 0;
+    Pacman prev;
 
     Enemy blinky;
     blinky.x_pos = 13;
@@ -783,7 +1083,8 @@ int main()
                 {
                     if(frame_counter % 20 == 0)
                     {
-                        getInput(pac);
+                        update(pac, board, blinky, pinky, inky, clyde, prev);
+                        std::cout << "Return from update" << std::endl;
                         if(pac.state == POWERUP)
                         {   
                             if(last_state == REGULAR)
@@ -859,6 +1160,7 @@ int main()
                         }
                         else
                         {
+                            runGhostAI(blinky, inky, pinky, clyde, pac, board);
                             if((pac.x_pos == inky.x_pos && pac.y_pos == inky.y_pos) || (pac.x_pos == blinky.x_pos && pac.y_pos == blinky.y_pos) || (pac.x_pos == pinky.x_pos && pac.y_pos == pinky.y_pos) || (pac.x_pos == clyde.x_pos && pac.y_pos == clyde.y_pos))
                             {
                                 pac_died = true;
@@ -894,7 +1196,6 @@ int main()
                                     }
                                 }
                             }
-                            runGhostAI(blinky, inky, pinky, clyde, pac, board);
                         }
                         last_state = pac.state;
                     }
