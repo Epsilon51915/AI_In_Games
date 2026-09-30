@@ -28,7 +28,7 @@
 #define CYAN ColorFromHSV(180, 1, 1);
 int TIME_BETWEEN_MOVES = 6;
 
-int fire = 0;
+int scene = 0;
 
 enum PacState
 {
@@ -857,7 +857,7 @@ void generalGhostAI(Enemy &ghost, Pacman pac, char board[36][28])
         {
             ghost.dead = false;
             ghost.x_pos = 14;
-            ghost.y_pos = 14;
+            ghost.y_pos= 14;
         }
         return;
     }
@@ -965,12 +965,16 @@ void generalGhostAI(Enemy &ghost, Pacman pac, char board[36][28])
     else
     {
         Pacman base;
+
+            base.y_pos = 14;
+        
         base.x_pos = 14;
-        base.y_pos = 14;
+        
         findMove(ghost, base, cur_tile, board);
         if(ghost.x_pos == base.x_pos && ghost.y_pos == base.y_pos)
         {
-            ghost.y_pos = 17;
+                ghost.y_pos = 17;
+
             ghost.dead = true;
             ghost.dead_counter = 6 + 4 * ghost.type;
             ghost.state = CHASE;
@@ -1181,36 +1185,41 @@ void drawPacDie(Pacman pac, int fc)
 
 void resetAfterDeath(Enemy &blinky, Enemy &pinky, Enemy &inky, Enemy &clyde, Pacman &pac)
 {
+    pac.x_pos = 14;
+    pac.y_pos = 26;
     blinky.x_pos = 13;
     blinky.y_pos = 17;
+    inky.x_pos = 14;
+    inky.y_pos = 17;
+    pinky.x_pos = 15;
+    pinky.y_pos = 17;
+    clyde.x_pos = 16;
+    clyde.y_pos = 17;
+
     blinky.state = CHASE;
     blinky.draw_char = 'o';
     blinky.dead = true;
     blinky.dead_counter = 3 + (rand() % 3) - 1;
 
-    inky.x_pos = 14;
-    inky.y_pos = 17;
+    
     inky.state = CHASE;
     inky.draw_char = 'o';
     inky.dead = true;
     inky.dead_counter = 9 + 2 * (rand() % 3) - 2;
 
-    pinky.x_pos = 15;
-    pinky.y_pos = 17;
+    
     pinky.state = CHASE;
     pinky.draw_char = 'o';
     pinky.dead = true;
     pinky.dead_counter = 15 + 3 * (rand() % 3) - 3;
 
-    clyde.x_pos = 16;
-    clyde.y_pos = 17;
+    
     clyde.state = CHASE;
     clyde.draw_char = 'o';
     clyde.dead = true;
     clyde.dead_counter = 21 + 4 * (rand() % 3) - 4;
 
-    pac.x_pos = 14;
-    pac.y_pos = 26;
+    
     pac.draw_char = 'o';
     pac.state = REGULAR;
 }
@@ -1229,7 +1238,6 @@ int main()
     int score = 0;
     int life_score = 0;
     int wins = 0;
-    int scene = 0;
     std::string scorestr;
 
     Pacman pac;
@@ -1294,7 +1302,6 @@ int main()
     {
         return -1;
     }
-
     while(!window.ShouldClose())
     {
         window.ClearBackground();
@@ -1452,7 +1459,7 @@ int main()
                                     pac_died = true;
                                     frame_counter = 0;
                                 }
-                                if(ghost_stall != 10)
+                                if(ghost_stall != 9)
                                 {
                                     runGhostAI(blinky, inky, pinky, clyde, pac, board);
                                     ghost_stall++;
